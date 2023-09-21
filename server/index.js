@@ -14,17 +14,24 @@ const {
   CLPublicKey,
   CasperClient,
 } = require("casper-js-sdk");
-const clientService = new CasperServiceByJsonRPC("http://3.136.227.9:7777/rpc");
-const client = new CasperClient("http://3.136.227.9:7777/rpc");
+const clientService = new CasperServiceByJsonRPC(
+  "http://94.130.10.55:7777/rpc"
+);
+// const client = new CasperClient("http://94.130.10.55:7777/rpc");
+
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 app.post("/", async (req, res) => {
   let { signedDeployJSON } = req.body;
   const signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
 
-  let deploy_hash = await client.putDeploy(signedDeploy);
+  await sleep(1000);
+
+  let deploy_hash = await clientService.deploy(signedDeploy);
+
   console.log("deploy_hash is: ", deploy_hash);
 
-  res.status(200).send(deploy_hash);
+  res.status(200).send(deploy_hash.deploy_hash);
 });
 
 app.post("/balance", async (req, res) => {
