@@ -12,7 +12,6 @@ const {
   CasperServiceByJsonRPC,
   DeployUtil,
   CLPublicKey,
-  CasperClient,
 } = require("casper-js-sdk");
 const clientService = new CasperServiceByJsonRPC(
   "http://94.130.10.55:7777/rpc"
@@ -31,7 +30,7 @@ app.post("/", async (req, res) => {
 
   console.log("deploy_hash is: ", deploy_hash);
 
-  res.status(200).send(deploy_hash.deploy_hash);
+  res.status(200).send(deploy_hash.deploy_hash || deploy_hash.data);
 });
 
 app.post("/balance", async (req, res) => {
