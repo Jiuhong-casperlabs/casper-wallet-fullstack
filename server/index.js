@@ -8,13 +8,11 @@ app.use(cors());
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-const {
-  CasperServiceByJsonRPC,
-  DeployUtil,
-  CLPublicKey,
-} = require("casper-js-sdk");
+const { CasperServiceByJsonRPC, DeployUtil } = require("casper-js-sdk");
 const clientService = new CasperServiceByJsonRPC(
-  "http://94.130.10.55:7777/rpc"
+  // "http://16.162.124.124:7777/rpc"
+  // "https://rpc.testnet.casperlabs.io/rpc"
+  "https://rpc.mainnet.casperlabs.io/rpc"
 );
 // const client = new CasperClient("http://94.130.10.55:7777/rpc");
 
@@ -35,21 +33,19 @@ app.post("/", async (req, res) => {
 
 app.post("/balance", async (req, res) => {
   let { publicKey } = req.body;
-  console.log("pk is ", publicKey);
 
-  const latestBlock = await clientService.getLatestBlockInfo();
-  const root = await clientService.getStateRootHash(latestBlock.block.hash);
-
-  //account balance from the last block
   try {
-    const balanceUref = await clientService.getAccountBalanceUrefByPublicKey(
-      root,
-      CLPublicKey.fromHex(publicKey)
+    const balance = await clientService.queryBalance(
+      "main_purse_under_public_key",
+      // "0176197d7191ce519ed043221956a2227921abf30364d4362970229027ec828f04"
+      publicKey
     );
-    const balance = await clientService.getAccountBalance(
-      latestBlock.block.header.state_root_hash,
-      balanceUref
-    );
+    console.log(balance);
+    // const balance = await clientService.queryBalance(
+    //   "purse_uref",
+    //   "uref-99b8abb5ac96537c17c672bd341ca611b8fb1e3dab6d15176af0f730e34d4346-007"
+    // );
+    // console.log(balance);
     res.status(200).send(balance.toString());
   } catch (error) {
     console.log(error);
